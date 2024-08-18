@@ -1,0 +1,57 @@
+{
+    "lists": [
+        {
+            "id": 1,
+            "name": "Groceries",
+            "order": 2
+        },
+        {
+            "id": 2,
+            "name": "Pharmacy",
+            "order": 3
+        },
+        {
+            "id": 3,
+            "name": "Home",
+            "order": 1,
+            "description": "Stuff to buy for the house"
+        }
+    ],
+    "categories": [
+        {
+            "id": 1,
+            "name": "Bathroom",
+            "description": "items that go in the bathroom",
+            "color": "Orange"
+        },
+        {
+            "id": 2,
+            "name": "Meat",
+            "color": "Pink"
+        },
+        {
+            "id": 3,
+            "name": "Drinks",
+            "color": "Gray"
+        }
+    ],
+    "items": [
+        {
+            "id": 1,
+            "name": "toothbrush",
+            "checked": false,
+            "note": "to put in the school bag",
+            "listId": 2,
+            "categoryId": 1
+        },
+        {
+            "id": 2,
+            "name": "Poney soda",
+            "checked": false,
+            "note": "string",
+            "quantity": 6,
+            "listId": 1,
+            "categoryId": 3
+        }
+    ]
+}
