@@ -1,0 +1,28 @@
+<div class="flex flex-col"> 
+  @if (loading) {
+    <mat-spinner class="m-auto"></mat-spinner>
+  }
+
+  @if (list && !loading) {
+    <div>
+      {{list.name}}
+    </div>
+
+    <div class="collection">
+      @for (item of listItems; track item) {
+        <div class="element" cdkDrag>
+          <mat-checkbox (change)="onCheckItem(item, $event.checked)" [checked]="item.checked"></mat-checkbox>
+          <div class="flex flex-col items-center">
+            <p>{{ item.name }}</p>
+            <p class="text-xs">{{ item.note }}</p>
+          </div>
+          <!-- TODO: add category name chip -->
+          <app-floating-settings-menu 
+            (edit)="onEditItem(item)"
+            (delete)="onDeleteItem(item)"
+          ></app-floating-settings-menu>
+        </div>
+      }
+    </div>
+  }
+</div>

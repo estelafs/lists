@@ -28,7 +28,7 @@ export class ItemService {
    * @param id list id
    */
   public async loadItemsByListId(id: number): Promise<void> {
-    const items = (await this.restService.get(this.url + `?list=${id}&_expand=category&_expand=list`) ?? []) as Item[];
+    const items = (await this.restService.get(this.url + `?listId=${id}&_expand=category&_expand=list`) ?? []) as Item[];
     this.items.next(items);
   }
 
@@ -38,10 +38,8 @@ export class ItemService {
    * @param item item updated to save
    */
   public async updateItem(item: Item): Promise<void> {
-    const id = item.id;
-    delete item.id;
     delete item.list;
     delete item.category;
-    await this.restService.put(this.url + `/${id}`, JSON.stringify(item));
+    await this.restService.put(this.url + `/${item.id}`, JSON.stringify(item));
   }
 }

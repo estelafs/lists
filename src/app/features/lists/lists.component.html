@@ -1,0 +1,19 @@
+<button mat-stroked-button (click)="createList()">
+  CREATE A NEW LIST
+</button>
+
+<div cdkDropList class="collection" (cdkDropListDropped)="onReorderList($event)">
+  @for (list of lists; track list) {
+    <div class="element" cdkDrag>
+      <mat-icon class="cursor-move" cdkDragHandle fontIcon="drag_handle"></mat-icon>
+      <button (click)="onOpenList(list)" class="flex flex-col cursor-pointer items-center">
+        <p>{{ list.name }}</p>
+        <p class="text-xs">{{ list.description }}</p>
+      </button>
+      <app-floating-settings-menu 
+        (edit)="onEditList(list)"
+        (delete)="onDeleteList(list)"
+      ></app-floating-settings-menu>
+    </div>
+  }
+</div>
