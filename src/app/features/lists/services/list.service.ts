@@ -50,4 +50,24 @@ export class ListService {
     const list = (await this.restService.get(this.url + `/${id}`) as List) ?? null;
     this.list.next(list);
   }
+
+  /**
+   * Update list object.
+   *
+   * @param list list updated to save
+   */
+  public async updateList(list: List): Promise<void> {
+    await this.restService.put(this.url + `/${list.id}`, JSON.stringify(list));
+    this.loadLists();
+  }
+
+  /**
+   * Create a new list object.
+   *
+   * @param list list object to create
+   */
+  public async createList(list: List): Promise<void> {
+    await this.restService.post(this.url, JSON.stringify(list));
+    this.loadLists();
+  }
 }
