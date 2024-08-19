@@ -1,0 +1,17 @@
+<mat-icon
+  [matMenuTriggerFor]="settingsMenu"
+  class="cursor-pointer"
+  fontIcon="more_vert"
+></mat-icon>
+
+<!-- Settings menu -->
+<mat-menu #settingsMenu="matMenu">
+  <ng-template matMenuContent>
+    <button mat-menu-item (click)="edit.emit()">
+      Edit
+    </button>
+    <button mat-menu-item (click)="delete.emit()">
+      Delete
+    </button>
+  </ng-template>
+</mat-menu>
