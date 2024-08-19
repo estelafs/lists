@@ -3,7 +3,7 @@ import { List } from './list.model';
 
 /** Model for Item object. */
 export interface Item {
-  id: number;
+  id?: number;
   name: string;
   checked: boolean;
   note?: string;
