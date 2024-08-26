@@ -3,20 +3,20 @@ import { List } from './list.model';
 
 /** Model for Item object. */
 export interface Item {
-  id?: number;
+  id: number;
   name: string;
   checked: boolean;
   note?: string;
   quantity?: number;
-  unit?: MeasuringUnits;
+  unit?: string;
   list?: List;
   category?: Category;
 }
 
 /** Enum for measuring units */
 export enum MeasuringUnits {
-  kilo, 
-  liter, 
-  centimeter, 
-  meter, 
+  kilo = 'k',
+  liter = 'l',
+  centimeter = 'cm',
+  meter = 'm',
 }
