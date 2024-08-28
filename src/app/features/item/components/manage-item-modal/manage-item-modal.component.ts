@@ -20,7 +20,7 @@ import {
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { CategoryService } from '../../../../core/services/category.service';
+import { CategoryService } from '../../../../shared/services/category.service';
 import { ManageCategoryModalComponent } from '../../../categories/components/manage-category-modal/manage-category-modal.component';
 import { CommonModule } from '@angular/common';
 import { takeUntil } from 'rxjs';

@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FloatingSettingsMenuComponent } from '../../shared/components/floating-settings-menu/floating-settings-menu.component';
 import { Item, MeasuringUnits } from '../../shared/models/item.model';
-import { ItemService } from '../../core/services/item.service';
+import { ItemService } from '../../shared/services/item.service';
 import { ManageItemModalComponent } from './components/manage-item-modal/manage-item-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';

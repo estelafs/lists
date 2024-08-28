@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
-import { RestService } from './rest.service';
-import { Item } from '../../shared/models/item.model';
+import { RestService } from '../../core/services/rest.service';
+import { Item } from '../models/item.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 /**

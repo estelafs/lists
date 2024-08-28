@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ListService } from '../../services/list.service';
 import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { ItemService } from '../../../../core/services/item.service';
+import { ItemService } from '../../../../shared/services/item.service';
 import { CardModule } from 'primeng/card';
 import { ItemComponent } from '../../../item/item.component';
 import { MatButtonModule } from '@angular/material/button';
