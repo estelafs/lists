@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CdkDropList, CdkDrag, moveItemInArray, CdkDragDrop, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { List } from '../../shared/models/list.model';
 import { ListService } from './services/list.service';
 import {MatIconModule} from '@angular/material/icon';
@@ -8,6 +7,12 @@ import { FloatingSettingsMenuComponent } from '../../shared/components/floating-
 import { MatDialog } from '@angular/material/dialog';
 import { ManageListModalComponent } from './components/manage-list-modal/manage-list-modal.component';
 import { MatButtonModule } from '@angular/material/button';
+import { EmptyIndicatorComponent } from '../../shared/components/empty-indicator/empty-indicator.component';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { CommonModule } from '@angular/common';
+import { takeUntil } from 'rxjs';
+import { UnsubscribeComponent } from '../../shared/components/unsubscribe/unsubscribe.component';
 
 /**
  * Lists component.
@@ -16,32 +21,26 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-lists',
   standalone: true,
   imports: [
-    CdkDropList,
-    CdkDrag,
-    CdkDragHandle,
+    CommonModule,
     MatIconModule,
     FloatingSettingsMenuComponent,
     MatButtonModule,
+    EmptyIndicatorComponent,
+    ConfirmDialogModule,
   ],
+  providers: [ConfirmationService],
   templateUrl: './lists.component.html',
   styleUrl: './lists.component.scss',
 })
-export class ListsComponent {
-  /** Collection of available lists */
-  public lists: List[] = [];
-
+export class ListsComponent extends UnsubscribeComponent {
   constructor(
-    private listService: ListService,
+    public listService: ListService,
     private router: Router,
+    private confirmationService: ConfirmationService,
     private dialog: MatDialog
   ) {
+    super();
     this.listService.loadLists();
-
-    this.listService.lists.subscribe((value: List[] | null) => {
-      if(value) {
-        this.lists = value;
-      }
-    });
   }
 
   /**
@@ -53,10 +52,6 @@ export class ListsComponent {
     this.router.navigateByUrl('/list' + `/${list.id}`);
   }
 
-  public onReorderList(event: CdkDragDrop<List[]>) {
-    moveItemInArray(this.lists, event.previousIndex, event.currentIndex);
-  }
-
   /**
    * Handle click in the edit list settings option opening edit list modal
    *
@@ -65,28 +60,34 @@ export class ListsComponent {
   public onEditList(list: List): void {
     const dialogRef = this.dialog.open(ManageListModalComponent, {
       data: { list },
+      minWidth: 500
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.listService.updateList({ ...result, id: list.id });
-      }
-    });
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          this.listService.updateList({ ...result, id: list.id });
+        }
+      });
   }
 
   /**
-   * Handle click in the edit list settings option opening edit list modal
+   * Handle click create new list opening modal
    */
   public createList(): void {
     const dialogRef = this.dialog.open(ManageListModalComponent, {
-      data: { order: this.lists.length + 1 },
+      data: { order: this.listService.lists.getValue().length + 1 },
+      minWidth: 500
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.listService.createList(result);
-      }
-    });
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          this.listService.createList(result);
+        }
+      });
   }
 
   /**
@@ -95,6 +96,14 @@ export class ListsComponent {
    * @param list list to be deleted
    */
   public onDeleteList(list: List): void {
-    console.log('onDeleteList list: ', list);
+    this.confirmationService.confirm({
+      message: `Are you sure that you want to delete the list '${list.name}'?`,
+      header: 'Delete',
+      icon: 'pi pi-exclamation-triangle',
+      key: 'confirmDelete',
+      accept: () => {
+        this.listService.deleteList(list);
+      }
+    });
   }
 }

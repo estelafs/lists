@@ -1,12 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ListService } from '../../services/list.service';
-import { List } from '../../../../shared/models/list.model';
 import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { ItemService } from '../../../../core/services/item.service';
-import { Item } from '../../../../shared/models/item.model';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { FloatingSettingsMenuComponent } from '../../../../shared/components/floating-settings-menu/floating-settings-menu.component';
+import { CardModule } from 'primeng/card';
+import { ItemComponent } from '../../../item/item.component';
+import { MatButtonModule } from '@angular/material/button';
+import { EmptyIndicatorComponent } from '../../../../shared/components/empty-indicator/empty-indicator.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ManageItemModalComponent } from '../../../item/components/manage-item-modal/manage-item-modal.component';
+import { CommonModule } from '@angular/common';
+import { takeUntil } from 'rxjs';
+import { UnsubscribeComponent } from '../../../../shared/components/unsubscribe/unsubscribe.component';
 
 /**
  * List component.
@@ -15,68 +20,58 @@ import { FloatingSettingsMenuComponent } from '../../../../shared/components/flo
   selector: 'app-list',
   standalone: true,
   imports: [
+    CommonModule,
     MatProgressSpinnerModule,
-    MatCheckboxModule,
-    FloatingSettingsMenuComponent,
+    CardModule,
+    ItemComponent,
+    MatButtonModule,
+    EmptyIndicatorComponent,
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
 })
-export class ListComponent implements OnInit {
+export class ListComponent
+  extends UnsubscribeComponent
+  implements OnInit
+{
   /** Loading indicator */
   public loading = true;
-  /** List object */
-  public list!: List | null;
-  /** Items from the current opened list object */
-  public listItems: Item[] = [];
 
-  constructor(public listService: ListService, private route: ActivatedRoute, private itemService: ItemService){}
+  constructor(
+    public listService: ListService,
+    private route: ActivatedRoute,
+    public itemService: ItemService,
+    private dialog: MatDialog
+  ){
+    super();
+  }
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      this.loading = true;
-      this.listService.loadListById(params['id']);
-      this.itemService.loadItemsByListId(params['id']);
-    });
-
-    this.listService.list.subscribe((value: List | null) => {
-      if(value) {
-        this.list = value;
+    this.route.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async (params) => {
+        this.loading = true;
+        await this.listService.loadListById(params['id']);
+        await this.itemService.loadItemsByListId(params['id']);
         this.loading = false;
-      }
+      });
+  }
+
+  /**
+   * Handle click create new item opening modal
+   */
+  public createItem(): void {
+    const dialogRef = this.dialog.open(ManageItemModalComponent, {
+      data: { listId: this.listService.list.getValue()?.id },
+      minWidth: 500
     });
 
-    this.itemService.items.subscribe((value: Item[]) => {
-      this.listItems = value;
-    });
-  }
-
-  /**
-   * Handle click in item checkbox to check / uncheck it 
-   *
-   * @param item item checked / unchecked
-   * @param checked if item was checked (true) or unchecked (false)
-   */
-  public onCheckItem(item: Item, checked: boolean): void {
-    item.checked = checked;
-    this.itemService.updateItem(item);
-  }
-
-  /**
-   * Handle click in the edit item settings option 
-   *
-   * @param item item to be edited
-   */
-  public onEditItem(item: Item): void {
-    console.log('onEditItem item: ', item);
-  }
-
-  /**
-   * Handle click in the delete item settings option 
-   *
-   * @param item item to be deleted
-   */
-  public onDeleteItem(item: Item): void {
-    console.log('onDeleteItem item: ', item);
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          this.itemService.createItem(result);
+        }
+      });
   }
 }

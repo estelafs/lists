@@ -1,28 +1,21 @@
-<div class="flex flex-col"> 
-  @if (loading) {
-    <mat-spinner class="m-auto"></mat-spinner>
-  }
+@if (loading) {
+  <mat-spinner class="m-auto"></mat-spinner>
+}
 
-  @if (list && !loading) {
-    <div>
-      {{list.name}}
-    </div>
+@if (listService.list$ | async; as list) {
+  <p-card [header]="list.name" class="w-6">
+    <button mat-stroked-button class="w-full mb-2" (click)="createItem()">
+      ADD A NEW ITEM
+    </button>
 
-    <div class="collection">
-      @for (item of listItems; track item) {
-        <div class="element" cdkDrag>
-          <mat-checkbox (change)="onCheckItem(item, $event.checked)" [checked]="item.checked"></mat-checkbox>
-          <div class="flex flex-col items-center">
-            <p>{{ item.name }}</p>
-            <p class="text-xs">{{ item.note }}</p>
-          </div>
-          <!-- TODO: add category name chip -->
-          <app-floating-settings-menu 
-            (edit)="onEditItem(item)"
-            (delete)="onDeleteItem(item)"
-          ></app-floating-settings-menu>
-        </div>
-      }
-    </div>
-  }
-</div>
+    @if (itemService.items.getValue().length) {
+      <div class="collection">
+        @for (item of itemService.items$ | async; track item) {
+          <app-item [item]="item"></app-item>
+        }
+      </div>
+    } @else {
+      <app-empty-indicator [elementName]="'items'"></app-empty-indicator>
+    }
+  </p-card>
+}

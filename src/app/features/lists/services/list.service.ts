@@ -12,8 +12,8 @@ import { RestService } from '../../../core/services/rest.service';
 export class ListService {
   /** Current opened list */
   public list = new BehaviorSubject<List | null>(null);
-  /** Collection of all available list */
-  public lists = new BehaviorSubject<List[] | null>(null);
+  /** Collection of all available lists */
+  public lists = new BehaviorSubject<List[]>([]);
 
   /** Fake REST API url to list collection */
   private url = 'http://localhost:3000/lists';
@@ -23,13 +23,12 @@ export class ListService {
     return this.list.asObservable();
   }
 
-  /** @returns Current list as observable */
-  get lists$(): Observable<List[] | null> {
+  /** @returns Current lists as observable */
+  get lists$(): Observable<List[]> {
     return this.lists.asObservable();
   }
 
   constructor(private restService: RestService) {}
-
 
   /**
    * Gets the complete list collection from the database sorted by order
@@ -68,6 +67,16 @@ export class ListService {
    */
   public async createList(list: List): Promise<void> {
     await this.restService.post(this.url, JSON.stringify(list));
+    this.loadLists();
+  }
+
+  /**
+   * Delete list.
+   *
+   * @param list list selected to delete
+   */
+  public async deleteList(list: List): Promise<void> {
+    await this.restService.delete(this.url + `/${list.id}`);
     this.loadLists();
   }
 }

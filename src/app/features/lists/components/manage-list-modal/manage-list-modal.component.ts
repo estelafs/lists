@@ -58,7 +58,11 @@ export class ManageListModalComponent {
     this.listFormGroup = this.getListForm();
   }
 
-
+  /**
+   * Creates and returns the from group. 
+   *
+   * @returns list from group
+   */
   private getListForm(): FormGroup {
     return this.formBuilder.group({
       name: [get(this.data?.list, 'name', ''), Validators.required],
