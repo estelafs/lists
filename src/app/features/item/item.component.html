@@ -1,0 +1,35 @@
+<div class="element" [ngClass]="{'checked': item.checked}">
+  <div class="flex flex-row items-center">
+    <mat-checkbox color="primary" (change)="onCheckItem(item, $event.checked)" [checked]="item.checked"></mat-checkbox>
+    
+    <!-- Item name and note -->
+    <div class="flex flex-col">
+      <p>{{ item.name }}</p>
+      <p class="text-xs">{{ item.note }}</p>
+    </div>
+  </div>
+
+  <div class="flex flex-row items-center">
+    <!-- Item quantity and unit -->
+    <div class="flex flex-row mr-2 justify-between">
+      <p class="text-ms">{{ item.quantity }}</p>
+      @if (item.unit) {
+        <p class="text-ms">{{ $any(measuringUnits)[item.unit] }}</p>
+      }
+    </div>
+
+    <!-- Category chip -->
+    @if (item.category) {
+      <app-category [category]="item.category"></app-category>
+    }
+
+    <!-- Settings menu -->
+    <app-floating-settings-menu
+      class="ml-2"
+      (edit)="onEditItem(item)"
+      (delete)="onDeleteItem(item)"
+    ></app-floating-settings-menu>
+  </div>
+</div>
+
+<p-confirmDialog [baseZIndex]="10000" key="confirmDelete"></p-confirmDialog>
