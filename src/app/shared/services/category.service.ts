@@ -41,10 +41,9 @@ export class CategoryService {
    *
    * @param category category object to create
    */
-  public async createCategory(category: Category): Promise<string> {
-    const createdCategory = await this.restService.post(this.url, JSON.stringify(category));
+  public async createCategory(category: Category): Promise<void> {
+    await this.restService.post(this.url, JSON.stringify(category));
     this.loadCategories();
-    return (createdCategory as any)?.id;
   }
 
   /**

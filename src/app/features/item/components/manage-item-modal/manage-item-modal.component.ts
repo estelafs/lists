@@ -20,11 +20,12 @@ import {
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { CategoryService } from '../../../../shared/services/category.service';
-import { ManageCategoryModalComponent } from '../../../categories/components/manage-category-modal/manage-category-modal.component';
 import { CommonModule } from '@angular/common';
 import { takeUntil } from 'rxjs';
 import { UnsubscribeComponent } from '../../../../shared/components/unsubscribe/unsubscribe.component';
+import { CategoryComponent } from "../../../categories/category.component";
+import { CategoriesModalComponent } from '../../../categories/components/categories-modal/categories-modal.component';
+import { Category } from '../../../../shared/models/category.model';
 
 /**
  * Dialog data interface.
@@ -52,7 +53,8 @@ interface DialogData {
     MatDialogClose,
     ReactiveFormsModule,
     MatSelectModule,
-  ],
+    CategoryComponent,
+],
   templateUrl: './manage-item-modal.component.html',
   styleUrl: './manage-item-modal.component.scss'
 })
@@ -61,15 +63,16 @@ export class ManageItemModalComponent extends UnsubscribeComponent {
   public itemFormGroup!: ReturnType<typeof this.getItemForm>;
   /** List of measuring units */
   public measuringUnits: string[] = [];
+  /** Selected category object, if any */
+  public selectedCategory?: Category;
 
   constructor(
     @Inject(DIALOG_DATA) public data: DialogData,
     private formBuilder: FormBuilder,
-    public categoryService: CategoryService,
     private dialog: MatDialog
   ) {
     super();
-
+    this.selectedCategory = this.data.item?.category;
     // Generate form
     this.itemFormGroup = this.getItemForm();
 
@@ -82,23 +85,20 @@ export class ManageItemModalComponent extends UnsubscribeComponent {
   }
 
   /**
-   * Handle click create new category opening modal
+   * Open category modal to see all categories and select one
    */
-  public async createCategory(): Promise<void> {
-    const dialogRef = this.dialog.open(ManageCategoryModalComponent, {
-      data: {},
+  public openCategoriesModal(): void {
+    const dialogRef = this.dialog.open(CategoriesModalComponent, {
+      data: { category: this.selectedCategory },
       minWidth: 500
     });
 
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(async result => {
-        if (result) {
-          const categoryId = await this.categoryService.createCategory(result);
-          if (categoryId) {
-            this.itemFormGroup.get('categoryId')?.setValue(categoryId);
-          }
-        }
+      .subscribe((category: Category | undefined) => {
+        this.selectedCategory = category;
+        this.itemFormGroup.get('categoryId')?.setValue(category?.id ?? '');
+        this.itemFormGroup.markAsDirty();
       });
   }
 

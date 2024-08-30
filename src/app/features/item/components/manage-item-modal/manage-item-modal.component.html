@@ -31,18 +31,17 @@
       </mat-form-field>
     </div>
 
-    <mat-form-field>
-      <mat-label>Category</mat-label>
-      <mat-select formControlName="categoryId">
-        <mat-option>none</mat-option>
-        @for (category of categoryService.categories$ | async; track category) {
-          <mat-option [value]="category.id">{{category.name}}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <div class="flex flex-row justify-between items-center">
+      <mat-label>Category:</mat-label>
+      @if (selectedCategory) {
+        <app-category [category]="selectedCategory"></app-category>
+      } @else {
+        <mat-label>No category selected</mat-label>
+      }
+    </div>
 
-    <button mat-stroked-button class="w-full mb-2" (click)="createCategory()">
-      CREATE A NEW CATEGORY
+    <button mat-stroked-button class="w-full my-2" (click)="openCategoriesModal()">
+      CHANGE CATEGORY
     </button>
   </form>
 </mat-dialog-content>

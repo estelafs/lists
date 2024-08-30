@@ -1,0 +1,52 @@
+<h3 mat-dialog-title>
+  Categories
+</h3>
+
+<mat-dialog-content>
+  @if (categoryService.categories$ | async; as categories) {
+    @if (categories.length) {
+      <h2 class="mb-2">Select a category: </h2>
+      <div class="flex flex-wrap justify-evenly items-center">
+        @for (category of categories; track category) {
+          <div 
+            [ngClass]="{ 'selected': category.id === selectedCategory?.id }"
+            class="flex flex-col justify-between items-center card p-2 m-2"
+          >
+            <app-category
+              class="cursor-pointer mb-2"
+              (click)="selectedCategory?.id === category.id ? selectedCategory = undefined : selectedCategory = category"
+              [category]="category"
+            ></app-category>
+  
+            <div class="flex flex-row justify-between">
+              <button (click)="onEditCategory(category)">
+                <i class="pi pi-pencil mr-2"></i>
+              </button>
+              <button (click)="onDeleteCategory(category)">
+                <i class="pi pi-times"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <app-empty-indicator [elementName]="'categories'"></app-empty-indicator>
+    }
+  }
+
+  <button mat-stroked-button class="w-full mt-2" (click)="createCategory()">
+    CREATE A NEW CATEGORY
+  </button>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button
+    mat-button
+    [mat-dialog-close]="selectedCategory"
+  >
+    Confirm
+  </button>
+</mat-dialog-actions>
+
+
+<p-confirmDialog [baseZIndex]="10000" key="confirmDelete"></p-confirmDialog>
